@@ -1,0 +1,38 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function isRep() {
+      return signedIn()
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'rep';
+    }
+
+    // Profiles: anyone signed in can read (needed to look up push tokens),
+    // but you can only create/edit your own.
+    match /users/{uid} {
+      allow read: if signedIn();
+      allow create, update: if signedIn() && request.auth.uid == uid;
+
+      // Grade history is private to its owner.
+      match /grades/{recordId} {
+        allow read, write: if signedIn() && request.auth.uid == uid;
+      }
+    }
+
+    // Notices: everyone reads; any signed-in user can post as themselves;
+    // only the author or a class rep can delete.
+    match /notices/{noticeId} {
+      allow read: if signedIn();
+      allow create: if signedIn() && request.resource.data.authorId == request.auth.uid;
+      allow delete: if signedIn() && (resource.data.authorId == request.auth.uid || isRep());
+      allow update: if false;
+    }
+
+    // Timetable: everyone reads; only class reps publish/edit.
+    match /timetable/{classId} {
+      allow read: if signedIn();
+      allow write: if isRep();
+    }
+  }
+}

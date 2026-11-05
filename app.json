@@ -1,0 +1,34 @@
+{
+  "expo": {
+    "name": "UniVerse",
+    "slug": "universe-rn",
+    "version": "2.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "scheme": "universe",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "bt.edu.rub.cst.universe"
+    },
+    "android": {
+      "package": "bt.edu.rub.cst.universe",
+      "adaptiveIcon": {
+        "backgroundColor": "#6C5CE7",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "plugins": [
+      [
+        "expo-notifications",
+        { "color": "#6C5CE7" }
+      ]
+    ],
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
+  }
+}
