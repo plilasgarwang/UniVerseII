@@ -6,6 +6,7 @@ import {
   onSnapshot,
   orderBy,
   query,
+  updateDoc,
 } from 'firebase/firestore';
 import { db } from '../firebase';
 import { Notice, NoticeCategory } from '../types';
@@ -30,18 +31,43 @@ export function subscribeNotices(
   );
 }
 
+// ---- Create ----
 export async function addNotice(input: {
   title: string;
   description: string;
   category: NoticeCategory;
   authorId: string;
   authorEmail: string;
+  authorName: string;
+  pinned?: boolean;
 }) {
-  await addDoc(noticesRef, { ...input, createdAt: Date.now() });
+  await addDoc(noticesRef, { ...input, pinned: !!input.pinned, createdAt: Date.now() });
   // Fire-and-forget: alert every other signed-up device about the new notice.
   sendPushToEveryone(`New notice: ${input.title}`, input.description, input.authorId).catch(() => {});
 }
 
+// ---- Update ----
+// Only the content fields are editable; author and creation time never change.
+export async function updateNotice(
+  id: string,
+  changes: { title: string; description: string; category: NoticeCategory; pinned?: boolean }
+) {
+  const data: Record<string, unknown> = {
+    title: changes.title,
+    description: changes.description,
+    category: changes.category,
+    updatedAt: Date.now(),
+  };
+  if (changes.pinned !== undefined) data.pinned = changes.pinned;
+  await updateDoc(doc(db, 'notices', id), data);
+}
+
+/** Pin / unpin without touching the content (class reps only - enforced by the Firestore rules). */
+export async function setNoticePinned(id: string, pinned: boolean) {
+  await updateDoc(doc(db, 'notices', id), { pinned });
+}
+
+// ---- Delete ----
 export async function deleteNotice(id: string) {
   await deleteDoc(doc(db, 'notices', id));
 }

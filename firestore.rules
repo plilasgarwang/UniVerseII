@@ -21,12 +21,18 @@ service cloud.firestore {
     }
 
     // Notices: everyone reads; any signed-in user can post as themselves;
-    // only the author or a class rep can delete.
+    // only the author or a class rep can edit or delete.
     match /notices/{noticeId} {
       allow read: if signedIn();
       allow create: if signedIn() && request.resource.data.authorId == request.auth.uid;
       allow delete: if signedIn() && (resource.data.authorId == request.auth.uid || isRep());
-      allow update: if false;
+      // Edit: the author or a class rep. Author and creation time can never change,
+      // and only a class rep may pin / unpin.
+      allow update: if signedIn()
+        && (resource.data.authorId == request.auth.uid || isRep())
+        && !request.resource.data.diff(resource.data).affectedKeys()
+             .hasAny(['authorId', 'authorEmail', 'authorName', 'createdAt'])
+        && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['pinned']) || isRep());
     }
 
     // Timetable: everyone reads; only class reps publish/edit.

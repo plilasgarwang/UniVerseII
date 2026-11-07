@@ -44,3 +44,10 @@ firestore.rules              security rules
 - The "class representative" role is self-selected at signup (no admin approval). Fine for a class project; a real deployment would assign it from an admin console.
 - Push messages are sent from the client. Production should send them from a Cloud Function so tokens are never readable by other users.
 - Timetable room names are generic ("IT03 Classroom", "Computer Lab") because the source timetable had no room numbers.
+
+## Notice board (full CRUD)
+- **Create**: Post button. **Read**: live board with search, category filters, pinned section, NEW badges.
+- **Update**: open a notice and tap Edit (author or class rep). Edited notices show an "edited" tag.
+- **Delete**: open a notice and tap Delete (author or class rep).
+- **Pin**: class reps can pin important notices to the top.
+After updating, republish `firestore.rules` in the Firebase console.

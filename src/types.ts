@@ -9,6 +9,9 @@ export interface Notice {
   createdAt: number; // epoch ms
   authorId: string;
   authorEmail: string;
+  authorName?: string; // older notices won't have this - fall back to the email
+  updatedAt?: number; // set when the notice has been edited
+  pinned?: boolean; // pinned notices stay at the top of the board
 }
 
 export type Day = 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday';

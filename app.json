@@ -24,8 +24,13 @@
     "plugins": [
       [
         "expo-notifications",
-        { "color": "#6C5CE7" }
-      ]
+        {
+          "color": "#6C5CE7"
+        }
+      ],
+      "@react-native-firebase/app",
+      "@react-native-firebase/auth",
+      "expo-build-properties"
     ],
     "web": {
       "favicon": "./assets/favicon.png"
